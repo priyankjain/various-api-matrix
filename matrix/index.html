@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Exchange Rates</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript">
+ jQuery(document).ready(function($) {
+				$.ajax(
+				{
+  dataType: "json",
+  url: "http://pubapi.cryptsy.com/api.php?method=marketdatav2",
+  success: function(data)
+  {
+    document.getElementById("results").innerHTML = data;
+    console.log(data);
+  }
+
+		});
+
+});
+
+	</script>
+</head>
+<body>
+<div class="container">
+  <div class="row">&nbsp;</div>
+  <div class="row">
+	  <div class="col-md-3">
+       <div id="results"></div>
+    </div>
+  </div>
+
+
+  <div class="row">&nbsp;</div>
+
+  <div id="json"></div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="pagination" id="pagination">
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="pagination pull-right">
+          <li id="showing" class="active">
+          </li>
+        </ul>
+      </div>
+    </div>
+</div>
+</body>
+</html>

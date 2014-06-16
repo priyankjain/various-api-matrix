@@ -1,0 +1,41 @@
+8 sites to connect to:
+
+Mintpal.com
+Cryptsy.com
+Bter.com
+Btc-e.com
+Vircurex.com
+Bittrex.com
+Poloniex.com
+Kraken.com
+
+APIs below:
+
+https://www.mintpal.com/api
+https://www.cryptsy.com/pages/api
+https://bter.com/api
+https://btc-e.com/api/documentation
+https://vircurex.com/welcome/api?locale=en
+https://bittrex.com/Home/Api
+https://poloniex.com/api
+https://www.kraken.com/market
+
+- - -
+
+Please note:
+
+1. I am only after markets with BTC (bitcoin) in it. So everything such as:
+LTC-BTC, NMC-BTC, BC-BTC, PPC-BTC
+
+Anything that does not have BTC in it, I don't require.
+
+2. Anything that is XBT means it is BTC. I think Kraken uses XBT as its symbol for BTC.
+
+3. A few sites has it the other way around - they have BTC-LTC, which means the same thing as LTC-BTC (LTC in terms of BTC).
+I require the BTC to always be the 2nd pair e.g. BTC-LTC will equal LTC-BTC, BTC-NMC will equal NMC-BTC.
+
+If unsure of anything, please let me know. If you have some ideas, I'd be happy to discuss.
+
+You can also read up a bit on BTC (bitcoin) for your knowledge only.
+
+Thanks.
