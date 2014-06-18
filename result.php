@@ -79,13 +79,12 @@
 <body>
 <?php
 if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
-
+	header("Location: http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']));
 }
 require_once("config.php");
 $sql = "select * from rates where currency in ";
 $array = "('0',";
 foreach($config['currencies'] as $currency){
-	echo $currency." ";
 	if(isset($_POST[$currency])){
 		$array.="'".$currency."',";
 	}
