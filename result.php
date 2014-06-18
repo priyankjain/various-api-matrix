@@ -91,7 +91,7 @@ if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
 $sql = "select * from rates where currency in ";
 $array = "('0',";
 foreach($config['currencies'] as $currency){
-	if(isset($_POST[$currency])){
+	if(isset($_POST[$currency]) || $_POST['options'] == "yes"){
 		$array.="'".$currency."',";
 	}
 }
@@ -104,7 +104,7 @@ if($mysqli->connect_errno > 0){
 	exit;
 }
 if(!$result=$mysqli->query($sql)){
-	echo "Error executiong query";
+	echo "Error executing query";
 	exit;
 }
 $mysqli->close();
@@ -112,21 +112,28 @@ $mysqli->close();
 <div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
-    	<table class="table">
+    	<table style="table-layout: fixed;" class="table">
     		<thead><th>Currency</th><th>Mintpal</th><th>Cryptsy</th><th>Bter</th><th>Btc-e</th><th>Vircurex</th><th>Bittrex</th><th>Poloniex</th><th>Kraken</th></thead>
     		<tbody>
     			<?php
     				while($row=$result->fetch_assoc()){
     					echo '<tr><th>'.$row['currency'].'</th>
-    					<td>'.$row['mintpal'].'</td>
-    					<td>'.$row['cryptsy'].'</td>
-    					<td>'.$row['bter'].'</td>
-    					<td>'.$row['btce'].'</td>
-    					<td>'.$row['vircurex'].'</td>
+    					   <td>';
+                        if($row['mintpal']=='-') echo '-'; else echo number_format((float)$row['bittrex'],$config['precision'],'.',''); echo '</td>
+    					   <td>';
+                        if($row['cryptsy']=='-') echo '-'; else echo number_format((float)$row['cryptsy'],$config['precision'],'.',''); echo '</td>
+                            <td>';
+                        if($row['bter']=='-') echo '-'; else echo number_format((float)$row['bter'],$config['precision'],'.',''); echo '</td>
+                            <td>';
+                        if($row['btce']=='-') echo '-'; else echo number_format((float)$row['btce'],$config['precision'],'.',''); echo '</td>
+                        <td>';
+                        if($row['vircurex']=='-') echo '-'; else echo number_format((float)$row['vircurex'],$config['precision'],'.',''); echo '</td>
     					<td>';
                         if($row['bittrex']=='-') echo '-'; else echo number_format((float)$row['bittrex'],$config['precision'],'.',''); echo '</td>
-    					<td>'.$row['poloniex'].'</td>
-    					<td>'.$row['kraken'].'</td>
+                        <td>';
+                        if($row['poloniex']=='-') echo '-'; else echo number_format((float)$row['poloniex'],$config['precision'],'.',''); echo '</td>
+                        <td>';
+                        if($row['kraken']=='-') echo '-'; else echo number_format((float)$row['kraken'],$config['precision'],'.',''); echo '</td>
     					</tr>';
     				}
     			?>

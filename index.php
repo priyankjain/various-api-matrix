@@ -9,7 +9,28 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+
+function validate(){
+    var i=$('input[type="checkbox"]:checked').filter(".currencies").size();
+    if(i == 0){
+        if(document.getElementById('yes').checked){
+            document.getElementById("error").innerHTML = '';
+            return true;
+        }
+        else 
+            {   
+                var c= '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please select atleast one currency</div>';
+                document.getElementById("error").innerHTML = c;
+                //window.location.hash ="#error";
+                document.getElementById('error').scrollIntoView()
+                return false;
+            }
+    }
+    document.getElementById("error").innerHTML = '';
+    return true;
+}
                 $(function () {
+                    $("#refresh").hide();
             $('.button-checkbox').each(function () {
 
                 // Settings
@@ -74,6 +95,29 @@
                 init();
             });
         });
+$(function(){
+  $('input[type="radio"].yes-no').change(function(){
+    if ($(this).is(':checked'))
+    {  
+        if(document.getElementById("yes").checked)
+            $("#cur-pair").hide();
+        else
+            $("#cur-pair").show();
+    }
+  });
+});
+
+$(function(){
+  $('input[type="radio"].refresh').change(function(){
+    if ($(this).is(':checked'))
+    {  
+        if(document.getElementById("manual").checked)
+            $("#refresh").hide();
+        else
+            $("#refresh").show();
+    }
+  });
+});
     </script>
 </head>
 <body>
@@ -84,19 +128,40 @@
     <h3 class="panel-title"><center>Exchange Rates</center></h3>
     </div>
   <div class="panel-body">
-    <form name="currency" action="result.php" method="POST">
+    <div class="row"><div class="col-xs-3"></div><div class="col-xs-6" id="error"></div><div class="col-xs-3"></div></div>
+    <form name="currency" action="result.php" method="POST" onsubmit="return validate()">
     <div class="form-group">
             <h3>
                 <small>Currency Pairs</small>
             </h3>
     </div>
+    <div class="row">
+    <div class="form-group">
+            <label class="col-sm-3 col-md-3"><h4>Select all currencies?</h4></label>
+            <div class="col-sm-7 col-md-7">
+               <div class="btn-group" data-toggle="buttons">
+
+      <label class="btn btn-default">
+        <input type="radio" name="refresh-options" id="yes" value="yes" class="yes-no"> Yes
+      </label>
+      
+      <label class="btn btn-default active">
+        <input type="radio" name="refresh-options" id="no" value="no" class="yes-no" checked> No
+      </label> 
+</div>
+            </div>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div id="cur-pair">
 <?php
 require_once("config.php");
     $cnt = 0;
+
     for($i=0; $i < count($config['currencies']) ; $i++){
         if($cnt == 0) echo '<div class="form-group"><div class="row">';
         echo '<div class="col-xs-2"><span class="button-checkbox"><button type="button" class="btn" data-color="primary">'.$config['currencies'][$i].
-        '</button><input type="checkbox" class="hidden" name="'.$config['currencies'][$i].'"/></span></div>';
+        '</button><input type="checkbox" class="hidden currencies" name="'.$config['currencies'][$i].'"/></span></div>';
         if($cnt == 5 || $i == count($config['currencies'])-1) {
             echo '</div></div>';
             $cnt = -1;
@@ -104,21 +169,37 @@ require_once("config.php");
         $cnt++;
     }   
 ?>
+</div>
     <div class="form-group">
     <h3><br />
         <small>Display Options</small>
     </h3>
     </div>
-    <div class="form-group">
-        <span class="button-checkbox">
-            <button type="button" class="btn" data-color="primary">Auto Refresh</button>
-            <input type="checkbox" class="hidden" name = "autorefresh"/>
-        </span>
+<div class="row">
+       <div class="col-xs-6 form-group" >
+            <label class="col-sm-6 col-md-6"><h4>Auto Refresh?</h4></label>
+            <div class="col-sm-6 col-md-6">
+               <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-default">
+        <input type="radio" name="refresh-options" id="auto" value="auto" class="refresh"> Yes
+      </label>
+      
+      <label class="btn btn-default active">
+        <input type="radio" name="refresh-options" id="manual" value="manual" class="refresh" checked> No
+      </label> 
+</div>
+            </div>
     </div>
 
+     <div class="col-xs-6 form-group" id="refresh">
+    <input type="text"  id="seconds" class="form-control" name="seconds" placeholder="Enter interval in seconds">
+    </div>
+</div>
+<div class="row">
     <div class="form-group">
      <button type="submit" class="btn btn-info" name="submit">Submit</button>
     </div>
+</div>
 </form>
  
   </div>
