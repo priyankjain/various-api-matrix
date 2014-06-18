@@ -142,11 +142,11 @@ $(function(){
                <div class="btn-group" data-toggle="buttons">
 
       <label class="btn btn-default">
-        <input type="radio" name="refresh-options" id="yes" value="yes" class="yes-no"> Yes
+        <input type="radio" name="options" id="yes" value="yes" class="yes-no"> Yes
       </label>
       
       <label class="btn btn-default active">
-        <input type="radio" name="refresh-options" id="no" value="no" class="yes-no" checked> No
+        <input type="radio" name="options" id="no" value="no" class="yes-no" checked> No
       </label> 
 </div>
             </div>
@@ -175,7 +175,7 @@ require_once("config.php");
         <small>Display Options</small>
     </h3>
     </div>
-<div class="row">
+
        <div class="col-xs-6 form-group" >
             <label class="col-sm-6 col-md-6"><h4>Auto Refresh?</h4></label>
             <div class="col-sm-6 col-md-6">
@@ -194,12 +194,11 @@ require_once("config.php");
      <div class="col-xs-6 form-group" id="refresh">
     <input type="text"  id="seconds" class="form-control" name="seconds" placeholder="Enter interval in seconds">
     </div>
-</div>
-<div class="row">
+<div class="row"></div>
     <div class="form-group">
      <button type="submit" class="btn btn-info" name="submit">Submit</button>
     </div>
-</div>
+
 </form>
  
   </div>

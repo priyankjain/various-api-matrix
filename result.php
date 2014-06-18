@@ -8,85 +8,21 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-                $(function () {
-            $('.button-checkbox').each(function () {
-
-                // Settings
-                var $widget = $(this),
-                    $button = $widget.find('button'),
-                    $checkbox = $widget.find('input:checkbox'),
-                    color = $button.data('color'),
-                    settings = {
-                        on: {
-                            icon: 'glyphicon glyphicon-check'
-                        },
-                        off: {
-                            icon: 'glyphicon glyphicon-unchecked'
-                        }
-                    };
-
-                // Event Handlers
-                $button.on('click', function () {
-                    $checkbox.prop('checked', !$checkbox.is(':checked'));
-                    $checkbox.triggerHandler('change');
-                    updateDisplay();
-                });
-                $checkbox.on('change', function () {
-                    updateDisplay();
-                });
-
-                // Actions
-                function updateDisplay() {
-                    var isChecked = $checkbox.is(':checked');
-
-                    // Set the button's state
-                    $button.data('state', (isChecked) ? "on" : "off");
-
-                    // Set the button's icon
-                    $button.find('.state-icon')
-                        .removeClass()
-                        .addClass('state-icon ' + settings[$button.data('state')].icon);
-
-                    // Update the button's color
-                    if (isChecked) {
-                        $button
-                            .removeClass('btn-default')
-                            .addClass('btn-' + color + ' active');
-                    }
-                    else {
-                        $button
-                            .removeClass('btn-' + color + ' active')
-                            .addClass('btn-default');
-                    }
-                }
-
-                // Initialization
-                function init() {
-
-                    updateDisplay();
-
-                    // Inject the icon if applicable
-                    if ($button.find('.state-icon').length == 0) {
-                        $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
-                    }
-                }
-                init();
-            });
-        });
+    <script type="text/javascript">function formsubmit(){
+    document.getElementById("currency").submit();}
     </script>
 </head>
 <body>
 <?php
 require_once("config.php");
 ini_set('precision', $config['precision']);
-if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
-	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
-	echo '<script type="text/javascript">';
-	echo 'window.location.href="'.$uri.'"';
-	echo '</script>';
-	exit;
-}
+// if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
+// 	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
+// 	echo '<script type="text/javascript">';
+// 	echo 'window.location.href="'.$uri.'"';
+// 	echo '</script>';
+// 	exit;
+// }
 
 $sql = "select * from rates where currency in ";
 $array = "('0',";
@@ -107,10 +43,39 @@ if(!$result=$mysqli->query($sql)){
 	echo "Error executing query";
 	exit;
 }
-$mysqli->close();
 ?>
+    <form name="currency" id="currency" action="result.php" method="POST">
+        <?php
+            foreach($_POST as $key=>$value){
+                if($key!="submit")
+        echo '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
+    }
+    // echo '<input type="submit" value="">';
+    ?>
+
+    </form>
 <div class="container">
     <div class="row">&nbsp;</div>
+    
+    <div class="alert alert-info alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>Last Updated: </strong> <?php 
+    if(!$ts=$mysqli->query("select ts from last_updated limit 1")){
+        echo "Error fetching last updated time";
+        exit;
+    }
+    $times = $ts->fetch_assoc();
+    echo $times['ts'];
+    $mysqli->close();
+  ?>
+</div>
+<div class="row">
+    <?php if($_POST['refresh-options'] == "manual") 
+    echo '<div class="btn-group"><button class="btn btn-default btn-sm dropdown-toggle" type="button" onclick="formsubmit();">Refresh</button></div>';
+    else
+        echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($_POST['seconds']*10000).');</script>';
+    ?>
+</div>
     <div class="row">
     	<table style="table-layout: fixed;" class="table">
     		<thead><th>Currency</th><th>Mintpal</th><th>Cryptsy</th><th>Bter</th><th>Btc-e</th><th>Vircurex</th><th>Bittrex</th><th>Poloniex</th><th>Kraken</th></thead>
@@ -142,5 +107,11 @@ $mysqli->close();
     	</table>
     </div>
 </div>
+
 </body>
 </html>
+    <?php if($_POST['refresh-options'] == "auto") 
+        $seconds = 12;
+        if(isset($_POST['seconds']) && is_numeric($_POST['seconds'])) $seconds = $_POST['seconds'];
+        echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($_POST['seconds']*1000).');</script>';
+    ?>
