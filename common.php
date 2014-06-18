@@ -5,8 +5,8 @@ $config['user'] = "root";
 $config['pwd'] = "";
 $config['db'] = "api";
 $currency_list = array(
-	"365","AC","AUR","BC","BTCS","C2","CAIx","CINNI","COMM","CRYPT","DGB","DOGE","DOPE","DRK","EMC2","ENC","FAC","FLT","GRS","HIRO","HVC","ITC","IVC","KDC","LTC","METH","MINT","MRS","MYR","MZC","NAUT","NOBL","OLY","PLC","PND","POT","Q2C","RIC","SAT","SC","SPA","SUN","SYNC","TAK","TES","UNO","USDe","UTC","VRC","VTC","WC","XC","XLB","YC","ZED","ZET",
-"42","AC","ALF","AMC","ANC","ARG","AUR","BC","BCX","BEN","BET","BQC","BTB","BTE","BTG","BUK","CACH","CAIx","CAP","CASH","CAT","CGB","CINNI","CLR","CMC","CNC","COMM","CRC","CRYPT","CSC","DEM","DGB","DGC","DMD","DOGE","DRK","DVC","EAC","ELC","EMC2","EMD","EXE","EZC","FFC","FLAP","FLT","FRC","FRK","FST","FTC","GDC","GLC","GLD","GLX","HBN","HVC","IFC","IXC","JKC","KDC","KGC","LEAF","LGD","LK7","LKY","LOT","LTB","LTC","LYC","MAX","MEC","MEOW","MINT","MN1","MN2","MNC","MRY","MYR","MZC","NAN","NAUT","NBL","NEC","NET","NMC","NRB","NRS","NVC","NXT","NYAN","ORB","OSC","PHS","Points","POT","PPC","PTS","PXC","PYC","QRK","RDD","RPC","RYC","SAT","SBC","SC","SMC","SPA","SPT","SRC","STR","SXC","TAG","TAK","TEK","TES","TGC","TRC","UNB","UNO","USDe","UTC","VRC","VTC","WC","WDC","XC","XJO","XLB","XPM","YAC","YBC","ZCC","ZED","ZET",
+	"365","AC","AUR","BC","BTCS","C2","CAIX","CINNI","COMM","CRYPT","DGB","DOGE","DOPE","DRK","EMC2","ENC","FAC","FLT","GRS","HIRO","HVC","ITC","IVC","KDC","LTC","METH","MINT","MRS","MYR","MZC","NAUT","NOBL","OLY","PLC","PND","POT","Q2C","RIC","SAT","SC","SPA","SUN","SYNC","TAK","TES","UNO","USDE","UTC","VRC","VTC","WC","XC","XLB","YC","ZED","ZET",
+"42","AC","ALF","AMC","ANC","ARG","AUR","BC","BCX","BEN","BET","BQC","BTB","BTE","BTG","BUK","CACH","CAIX","CAP","CASH","CAT","CGB","CINNI","CLR","CMC","CNC","COMM","CRC","CRYPT","CSC","DEM","DGB","DGC","DMD","DOGE","DRK","DVC","EAC","ELC","EMC2","EMD","EXE","EZC","FFC","FLAP","FLT","FRC","FRK","FST","FTC","GDC","GLC","GLD","GLX","HBN","HVC","IFC","IXC","JKC","KDC","KGC","LEAF","LGD","LK7","LKY","LOT","LTB","LTC","LYC","MAX","MEC","MEOW","MINT","MN1","MN2","MNC","MRY","MYR","MZC","NAN","NAUT","NBL","NEC","NET","NMC","NRB","NRS","NVC","NXT","NYAN","ORB","OSC","PHS","Points","POT","PPC","PTS","PXC","PYC","QRK","RDD","RPC","RYC","SAT","SBC","SC","SMC","SPA","SPT","SRC","STR","SXC","TAG","TAK","TEK","TES","TGC","TRC","UNB","UNO","USDE","UTC","VRC","VTC","WC","WDC","XC","XJO","XLB","XPM","YAC","YBC","ZCC","ZED","ZET",
 "CNY","USD","LTC","AC","AUR","BC","BQC","BTB","BUK","C2","CDC","COMM","CMC","CNC","DGC","DOGE","DRK","DTC","EXC","FLT","FRC","FTC","KDC","MAX","MEC","MINT","MMC","NEC","NMC","NXT","PPC","PRT","PTS","QRK","SLM","SRC","TAG","YAC","VRC","VTC","WDC","XC","XCP","XPM","ZCC","ZET",
 "USD","RUR","EUR","CNH","GBP","LTC","NMC","NVC","TRC","PPC","FTC","XPM",
 'ANC','AUR','BC','DGC','DOGE','DVC','FLT','FRC','FTC','I0C','IXC','LTC','NMC','NVC','NXT','PPC','QRK','TRC','VTC','WC','WDC','XPM','ZET',
@@ -25,4 +25,5 @@ echo '<pre>';
 var_dump($currency);
 echo '</pre>';
 var_dump(implode("\"),(\"", $currency));
+var_dump(implode("\",\"", $currency));
 ?>

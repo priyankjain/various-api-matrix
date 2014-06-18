@@ -77,53 +77,57 @@
     </script>
 </head>
 <body>
+<?php
+if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
+
+}
+require_once("config.php");
+$sql = "select * from rates where currency in ";
+$array = "('0',";
+foreach($config['currencies'] as $currency){
+	echo $currency." ";
+	if(isset($_POST[$currency])){
+		$array.="'".$currency."',";
+	}
+}
+$array = substr($array,0,-1);
+$array.=")";
+$sql = $sql.$array;
+$mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
+if($mysqli->connect_errno > 0){
+	echo "Error connecting to database";
+	exit;
+}
+if(!$result=$mysqli->query($sql)){
+	echo $sql;
+	echo "Error executiong query";
+	exit;
+}
+?>
 <div class="container">
     <div class="row">&nbsp;</div>
-<div class="panel panel-info">
-  <div class="panel-heading">
-    <h3 class="panel-title"><center>Exchange Rates</center></h3>
+    <div class="row">
+    	<table class="table">
+    		<thead><th>Currency</th><th>Mintpal</th><th>Cryptsy</th><th>Bter</th><th>Btc-e</th><th>Vircurex</th><th>Bittrex</th><th>Poloniex</th><th>Kraken</th></thead>
+    		<tbody>
+    			<?php
+    				while($row=$result->fetch_assoc()){
+    					echo '<tr><th>'.$row['currency'].'</th>
+    					<td>'.$row['mintpal'].'</td>
+    					<td>'.$row['cryptsy'].'</td>
+    					<td>'.$row['bter'].'</td>
+    					<td>'.$row['btce'].'</td>
+    					<td>'.$row['vircurex'].'</td>
+    					<td>'.$row['bittrex'].'</td>
+    					<td>'.$row['poloniex'].'</td>
+    					<td>'.$row['kraken'].'</td>
+    					</tr>';
+    				}
+    			?>
+    			<tr></tr>
+    		<tbody>
+    	</table>
     </div>
-  <div class="panel-body">
-    <form name="currency" action="result.php" method="POST">
-    <div class="form-group">
-            <h3>
-                <small>Currency Pairs</small>
-            </h3>
-    </div>
-<?php
-require_once("config.php");
-    $cnt = 0;
-    for($i=0; $i < count($config['currencies']) ; $i++){
-        if($cnt == 0) echo '<div class="form-group"><div class="row">';
-        echo '<div class="col-xs-2"><span class="button-checkbox"><button type="button" class="btn" data-color="primary">'.$config['currencies'][$i].
-        '</button><input type="checkbox" class="hidden" name="'.$config['currencies'][$i].'"/></span></div>';
-        if($cnt == 5 || $i == count($config['currencies'])-1) {
-            echo '</div></div>';
-            $cnt = -1;
-        }
-        $cnt++;
-    }   
-?>
-    <div class="form-group">
-    <h3><br />
-        <small>Display Options</small>
-    </h3>
-    </div>
-    <div class="form-group">
-        <span class="button-checkbox">
-            <button type="button" class="btn" data-color="primary">Auto Refresh</button>
-            <input type="checkbox" class="hidden" name = "autorefresh"/>
-        </span>
-    </div>
-
-    <div class="form-group">
-     <button type="submit" class="btn btn-info" name="submit">Submit</button>
-    </div>
-</form>
- 
-  </div>
-</div>
-   
 </div>
 </body>
 </html>
