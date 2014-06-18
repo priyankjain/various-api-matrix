@@ -24,16 +24,7 @@ if(!isset($_POST) || count($_POST)<0){
 	exit;
 }
 
-$sql = "select * from rates where currency in ";
-$array = "('0',";
-foreach($config['currencies'] as $currency){
-	if(isset($_POST[$currency]) || $_POST['options'] == "yes"){
-		$array.="'".$currency."',";
-	}
-}
-$array = substr($array,0,-1);
-$array.=")";
-$sql = $sql.$array;
+$sql = "select * from rates";
 $mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
 if($mysqli->connect_errno > 0){
 	echo "Error connecting to database";
