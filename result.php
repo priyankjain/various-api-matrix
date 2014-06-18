@@ -62,8 +62,6 @@ if(!$result=$mysqli->query($sql)){
 <div class="row">
     <?php if($_POST['refresh-options'] == "manual") 
     echo '<div class="btn-group"><button class="btn btn-info btn-sm dropdown-toggle" type="button" onclick="formsubmit();">Refresh</button></div>';
-    else
-        echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($_POST['seconds']*10000).');</script>';
     ?>
 </div>
     <div class="row">
