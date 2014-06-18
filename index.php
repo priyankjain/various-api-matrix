@@ -123,7 +123,7 @@ $(function(){
 <body>
 <div class="container">
     <div class="row">&nbsp;</div>
-<div class="panel panel-info">
+<div class="panel panel-primary">
   <div class="panel-heading">
     <h3 class="panel-title"><center>Exchange Rates</center></h3>
     </div>
@@ -141,11 +141,11 @@ $(function(){
             <div class="col-sm-7 col-md-7">
                <div class="btn-group" data-toggle="buttons">
 
-      <label class="btn btn-default">
+      <label class="btn btn-primary">
         <input type="radio" name="options" id="yes" value="yes" class="yes-no"> Yes
       </label>
       
-      <label class="btn btn-default active">
+      <label class="btn btn-primary active">
         <input type="radio" name="options" id="no" value="no" class="yes-no" checked> No
       </label> 
 </div>
@@ -157,16 +157,26 @@ $(function(){
 <?php
 require_once("config.php");
     $cnt = 0;
-
-    for($i=0; $i < count($config['currencies']) ; $i++){
+    $mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
+if($mysqli->connect_errno > 0){
+    echo "Error connecting to database";
+    exit;
+}
+if(!$result=$mysqli->query("select `currency` from rates")){
+    echo "Error executing query";
+    exit;
+}
+$i=0;
+    while($row = $result->fetch_assoc()){
         if($cnt == 0) echo '<div class="form-group"><div class="row">';
-        echo '<div class="col-xs-2"><span class="button-checkbox"><button type="button" class="btn" data-color="primary">'.$config['currencies'][$i].
-        '</button><input type="checkbox" class="hidden currencies" name="'.$config['currencies'][$i].'"/></span></div>';
-        if($cnt == 5 || $i == count($config['currencies'])-1) {
+        echo '<div class="col-xs-2"><span class="button-checkbox"><button type="button" class="btn" data-color="primary">'.$row['currency'].
+        '</button><input type="checkbox" class="hidden currencies" name="'.$row['currency'].'"/></span></div>';
+        if($cnt == 5 || $i == $result->num_rows-1) {
             echo '</div></div>';
             $cnt = -1;
         }
         $cnt++;
+        $i++;
     }   
 ?>
 </div>
@@ -180,11 +190,11 @@ require_once("config.php");
             <label class="col-sm-6 col-md-6"><h4>Auto Refresh?</h4></label>
             <div class="col-sm-6 col-md-6">
                <div class="btn-group" data-toggle="buttons">
-                      <label class="btn btn-default">
+                      <label class="btn btn-primary">
         <input type="radio" name="refresh-options" id="auto" value="auto" class="refresh"> Yes
       </label>
       
-      <label class="btn btn-default active">
+      <label class="btn btn-primary active">
         <input type="radio" name="refresh-options" id="manual" value="manual" class="refresh" checked> No
       </label> 
 </div>

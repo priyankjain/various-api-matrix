@@ -16,13 +16,13 @@
 <?php
 require_once("config.php");
 ini_set('precision', $config['precision']);
-// if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
-// 	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
-// 	echo '<script type="text/javascript">';
-// 	echo 'window.location.href="'.$uri.'"';
-// 	echo '</script>';
-// 	exit;
-// }
+if(!isset($_POST) || count($_POST)<0){
+	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
+	echo '<script type="text/javascript">';
+	echo 'window.location.href="'.$uri.'"';
+	echo '</script>';
+	exit;
+}
 
 $sql = "select * from rates where currency in ";
 $array = "('0',";
@@ -50,7 +50,6 @@ if(!$result=$mysqli->query($sql)){
                 if($key!="submit")
         echo '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
     }
-    // echo '<input type="submit" value="">';
     ?>
 
     </form>
@@ -71,7 +70,7 @@ if(!$result=$mysqli->query($sql)){
 </div>
 <div class="row">
     <?php if($_POST['refresh-options'] == "manual") 
-    echo '<div class="btn-group"><button class="btn btn-default btn-sm dropdown-toggle" type="button" onclick="formsubmit();">Refresh</button></div>';
+    echo '<div class="btn-group"><button class="btn btn-info btn-sm dropdown-toggle" type="button" onclick="formsubmit();">Refresh</button></div>';
     else
         echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($_POST['seconds']*10000).');</script>';
     ?>
@@ -111,7 +110,9 @@ if(!$result=$mysqli->query($sql)){
 </body>
 </html>
     <?php if($_POST['refresh-options'] == "auto") 
-        $seconds = 12;
-        if(isset($_POST['seconds']) && is_numeric($_POST['seconds'])) $seconds = $_POST['seconds'];
-        echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($_POST['seconds']*1000).');</script>';
+        {
+            $seconds = 120;
+            if(isset($_POST['seconds']) && is_numeric($_POST['seconds'])) $seconds = $_POST['seconds'];
+            echo '<script type="text/javascript">setTimeout(function(){formsubmit();},'.($seconds*1000).');</script>';
+        }
     ?>

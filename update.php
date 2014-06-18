@@ -58,7 +58,7 @@ if($mysqli->connect_errno > 0){
     exit;
 }
 if(!$result=$mysqli->query($sql)){
-    echo "Error executiong query";
+    echo "Error executing query";
     exit;
 }
 $global_cur = array();
@@ -70,7 +70,13 @@ while($row=$result->fetch_assoc()){
 $json = curl("https://api.mintpal.com/v1/market/summary/BTC");
 $json = json_decode($json);
 foreach($json as $market){
-        $global_cur[strtoupper($market->code)][0]=$market->last_price;
+        $key = strtoupper($market->code);
+        if(!array_key_exists($key, $global_cur))
+        {
+            $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+        }
+        $global_cur[$key][0]=$market->last_price;
 }
 
 //Update cryptsy values
@@ -82,7 +88,13 @@ $markets=$json->return->markets;
 foreach($markets as $key=> $value){
     if(strpos($key,"BTC") != false){
         $keys = explode("/",$key);
-        $global_cur[strtoupper($keys[0])][1] = $value->lasttradeprice;
+        $key = $keys[0];
+        if(!array_key_exists($key, $global_cur))
+        {
+            $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+        }
+        $global_cur[$key][1] = $value->lasttradeprice;
     }
 }
 
@@ -93,12 +105,20 @@ $json = json_decode($json);
 foreach($json as $key=> $value){
     if(strpos($key,"btc") !== false){
         if(strpos($key,"btc_")!==false){
-            $global_cur[strtoupper(substr($key,4,strlen($key)-4))][2] = (1/$value->last);
+            $key = strtoupper(substr($key,4,strlen($key)-4));
+            $value = (1/$value->last);
         }
         else
         {
-            $global_cur[strtoupper(substr($key,0,strpos($key,"_")))][2] = $value->last;
+            $key = strtoupper(substr($key,0,strpos($key,"_")));
+            $value = ($value->last);
         }
+         if(!array_key_exists($key, $global_cur))
+        {
+            $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+        }
+        $global_cur[$key][2] = $value;
     }
 }
 
@@ -143,7 +163,12 @@ $markets=$json->result;
 foreach($markets as $market){
     if(strpos($market->MarketName,"BTC") !== false){
         $key = strtoupper(substr($market->MarketName, 4));
-        if(array_key_exists($key, $global_cur))
+        if(!array_key_exists($key, $global_cur))
+        {
+            echo 'Inserting now';
+            $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+        }
         $global_cur[$key][5] = $market->Last;
     }
 }
@@ -154,7 +179,13 @@ $json = curl("https://poloniex.com/public?command=returnTicker");
 $json = json_decode($json);
 foreach($json as $key=>$value){
     if(strpos($key,"BTC_") !== false){
-        $global_cur[strtoupper(substr($key, 4))][6] = $value->last;
+        $key = strtoupper(substr($key, 4));
+        if(!array_key_exists($key, $global_cur))
+        {
+            $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+        }
+        $global_cur[$key][6] = $value->last;
     }
 }
 
@@ -172,8 +203,8 @@ foreach($global_cur as $key=>$value){
     $queries.= "update `rates` set `mintpal` = '".$value[0]."', `cryptsy` = '".$value[1]."', `bter` = '".$value[2]."', `btce` = '".$value[3]
     ."', `vircurex` = '".$value[4]."', `bittrex` = '".$value[5]."', `poloniex` = '".$value[6]."', `kraken` = '".$value[7]."' where `currency` = '".$key."'; ";
 }
+$queries.="update `last_updated` set `ts` = now() where 1;";
 if(!$result=$mysqli->multi_query($queries)){
-    echo $queries;
     echo "Error executing multiple queries";
     exit;
 }
