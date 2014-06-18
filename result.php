@@ -78,6 +78,8 @@
 </head>
 <body>
 <?php
+require_once("config.php");
+ini_set('precision', $config['precision']);
 if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
 	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
 	echo '<script type="text/javascript">';
@@ -85,7 +87,7 @@ if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
 	echo '</script>';
 	exit;
 }
-require_once("config.php");
+
 $sql = "select * from rates where currency in ";
 $array = "('0',";
 foreach($config['currencies'] as $currency){
@@ -121,7 +123,8 @@ $mysqli->close();
     					<td>'.$row['bter'].'</td>
     					<td>'.$row['btce'].'</td>
     					<td>'.$row['vircurex'].'</td>
-    					<td>'.$row['bittrex'].'</td>
+    					<td>';
+                        if($row['bittrex']=='-') echo '-'; else echo number_format((float)$row['bittrex'],$config['precision'],'.',''); echo '</td>
     					<td>'.$row['poloniex'].'</td>
     					<td>'.$row['kraken'].'</td>
     					</tr>';

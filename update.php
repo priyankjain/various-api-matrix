@@ -1,8 +1,8 @@
 <?php
 $start = microtime(true);
-ini_set('precision', 20);
-$start = microtime(true);   
 require_once("config.php");
+ini_set('precision', $config['precision']);
+$start = microtime(true);   
 function plain_curl($url = '', $var = '', $header = false, $nobody = false) {
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_NOBODY, $header);
