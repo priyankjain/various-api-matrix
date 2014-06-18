@@ -1,4 +1,8 @@
 <?php
+$start = microtime(true);
+ini_set('precision', 20);
+$start = microtime(true);   
+require_once("config.php");
 function plain_curl($url = '', $var = '', $header = false, $nobody = false) {
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_NOBODY, $header);
@@ -47,13 +51,133 @@ function fetch_value($str, $find_start, $find_end) {
     $end = strpos(substr($str, $start + $length), $find_end);
     return trim(substr($str, $start + $length, $end));
 }
+$sql = "select * from rates";
+$mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
+if($mysqli->connect_errno > 0){
+    echo "Error connecting to database";
+    exit;
+}
+if(!$result=$mysqli->query($sql)){
+    echo "Error executiong query";
+    exit;
+}
+$global_cur = array();
+while($row=$result->fetch_assoc()){
+    $global_cur[$row['currency']] = array($row['mintpal'],$row['cryptsy'],$row['bter'],$row['btce'],$row['vircurex'],$row['bittrex'],$row['poloniex'],$row['kraken']);
+}
+
+//Update mintpal values
 $json = curl("https://api.mintpal.com/v1/market/summary/BTC");
 $json = json_decode($json);
-$markets=$json;
-$currency_pairs= array();
-foreach($markets as $market){
-        echo $market->code."/BTC ".$market->last_price.'<br/>';
-        $currency_pairs[] = $market->code;
+foreach($json as $market){
+        $global_cur[strtoupper($market->code)][0]=$market->last_price;
 }
-var_dump(implode("\",\"",$currency_pairs));
+
+//Update cryptsy values
+$json = null;
+$markets = null;
+$json = curl("http://pubapi.cryptsy.com/api.php?method=marketdatav2");
+$json = json_decode($json);
+$markets=$json->return->markets;
+foreach($markets as $key=> $value){
+    if(strpos($key,"BTC") != false){
+        $keys = explode("/",$key);
+        $global_cur[strtoupper($keys[0])][1] = $value->lasttradeprice;
+    }
+}
+
+//Update bter values
+$json = null;
+$json = curl("https://data.bter.com/api/1/tickers");
+$json = json_decode($json);
+foreach($json as $key=> $value){
+    if(strpos($key,"btc") !== false){
+        if(strpos($key,"btc_")!==false){
+            $global_cur[strtoupper(substr($key,4,strlen($key)-4))][2] = (1/$value->last);
+        }
+        else
+        {
+            $global_cur[strtoupper(substr($key,0,strpos($key,"_")))][2] = $value->last;
+        }
+    }
+}
+
+//Update btce values
+require_once('btce-api.php');
+$BTCeAPI = new BTCeAPI(
+                    /*API KEY:    */    '96QE22NB-I471TW61-M1XOOFFE-LP9G5W30-RAGNPWZI', 
+                    /*API SECRET: */    '50f3441fa7a00300c09b03d9bfba718791c044989d499e932a6bf9fa0314ecb4'
+                      );
+
+$btc_usd = array();
+$keys = array('btc_usd','btc_rur','btc_eur','btc_cnh','btc_gbp','ltc_btc','nmc_btc','nvc_btc','trc_btc','ppc_btc','ftc_btc','xpm_btc');
+$currency_pair=array();
+foreach($keys as $key){
+$value = json_decode($BTCeAPI->getPairTicker($key));
+$value = $value->ticker->last;
+if(strpos($key,"btc_")!== false)
+{
+    $global_cur[strtoupper(substr($key,4,strlen($key)-4))][3] = (1/$value);
+}
+else{
+    $global_cur[strtoupper(substr($key,0,strpos($key,"_")))][3] = $value;
+}
+}
+
+//Update vircurex values
+$currencies=array(
+'ANC','AUR','BC','DGC','DOGE','DVC','FLT','FRC','FTC','I0C','IXC','LTC','NMC','NVC','NXT','PPC','QRK','TRC','VTC','WC','WDC','XPM','ZET');
+$json = null;
+foreach($currencies as $currency){
+$json = curl("https://api.vircurex.com/api/get_last_trade.json?base=".$currency."&alt=btc");
+$json = json_decode($json);
+$global_cur[$currency][4] =$json->value;
+}
+
+//Update bittrex values
+$json = null;
+$markets = null;
+$json = curl("https://bittrex.com/api/v1/public/getmarketsummaries");
+$json = json_decode($json);
+$markets=$json->result;
+foreach($markets as $market){
+    if(strpos($market->MarketName,"BTC") !== false){
+        $key = strtoupper(substr($market->MarketName, 4));
+        if(array_key_exists($key, $global_cur))
+        $global_cur[$key][5] = $market->Last;
+    }
+}
+
+//update poloniex values
+$json = null;
+$json = curl("https://poloniex.com/public?command=returnTicker");
+$json = json_decode($json);
+foreach($json as $key=>$value){
+    if(strpos($key,"BTC_") !== false){
+        $global_cur[strtoupper(substr($key, 4))][6] = $value->last;
+    }
+}
+
+//Update kraken values
+$json = null;
+$markets = null;
+$json = curl("https://api.kraken.com/0/public/Ticker?pair=XXBTXLTC,XXBTXNMC,XXBTXXDG,XXBTXXRP,XXBTXXVN");
+$json = json_decode($json);
+$markets=$json->result;
+foreach($markets as $key=>$value){
+        $global_cur[strtoupper(substr($key,5))][7] = $value->c[1];
+}
+$queries = "";
+foreach($global_cur as $key=>$value){
+    $queries.= "update `rates` set `mintpal` = '".$value[0]."', `cryptsy` = '".$value[1]."', `bter` = '".$value[2]."', `btce` = '".$value[3]
+    ."', `vircurex` = '".$value[4]."', `bittrex` = '".$value[5]."', `poloniex` = '".$value[6]."', `kraken` = '".$value[7]."' where `currency` = '".$key."'; ";
+}
+if(!$result=$mysqli->multi_query($queries)){
+    echo $queries;
+    echo "Error executing multiple queries";
+    exit;
+}
+$mysqli->close();
+$total = microtime(true) - $start;
+echo $total;
 ?>

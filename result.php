@@ -79,7 +79,11 @@
 <body>
 <?php
 if(!isset($_POST) || count($_POST)<0 || !isset($_POST['submit'])){
-	header("Location: http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']));
+	$uri = "http://".$_SERVER['HTTP_HOST'].str_replace("result.php", "", $_SERVER['REQUEST_URI']);
+	echo '<script type="text/javascript">';
+	echo 'window.location.href="'.$uri.'"';
+	echo '</script>';
+	exit;
 }
 require_once("config.php");
 $sql = "select * from rates where currency in ";
@@ -98,10 +102,10 @@ if($mysqli->connect_errno > 0){
 	exit;
 }
 if(!$result=$mysqli->query($sql)){
-	echo $sql;
 	echo "Error executiong query";
 	exit;
 }
+$mysqli->close();
 ?>
 <div class="container">
     <div class="row">&nbsp;</div>
