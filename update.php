@@ -196,7 +196,7 @@ $json = curl("https://api.kraken.com/0/public/Ticker?pair=XXBTXLTC,XXBTXNMC,XXBT
 $json = json_decode($json);
 $markets=$json->result;
 foreach($markets as $key=>$value){
-        $global_cur[strtoupper(substr($key,5))][7] = (1/$value->c[1]);
+        $global_cur[strtoupper(substr($key,5))][7] = (1/$value->c[0]);
 }
 $queries = "";
 foreach($global_cur as $key=>$value){
