@@ -23,8 +23,7 @@ if(!isset($_POST) || count($_POST)<0){
 	echo '</script>';
 	exit;
 }
-
-$sql = "select * from rates";
+$sql = "select currency from rates";
 $mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
 if($mysqli->connect_errno > 0){
 	echo "Error connecting to database";
@@ -33,6 +32,32 @@ if($mysqli->connect_errno > 0){
 if(!$result=$mysqli->query($sql)){
 	echo "Error executing query";
 	exit;
+}
+$currencies = array();
+while($row = $result->fetch_assoc()){
+    $currencies[] = $row['currency'];
+}
+$array = "('".implode("','",$currencies)."')";
+$sql="";
+if($_POST['options'] == "no"){
+    $sql = "select * from rates where currency in ";
+    $array = "('0',";
+    foreach($currencies as $currency){
+        if(isset($_POST[$currency])){
+            $array.="'".$currency."',";
+        }
+    }
+    $array = substr($array,0,-1);
+    $array.=")";
+    $sql = $sql.$array;
+}
+else
+{
+    $sql = "select * from rates";
+}
+if(!$result=$mysqli->query($sql)){
+    echo "Error executing query";
+    exit;
 }
 ?>
     <form name="currency" id="currency" action="result.php" method="POST">
