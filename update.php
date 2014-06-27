@@ -1,5 +1,6 @@
 <?php
 $start = microtime(true);
+ini_set('memory_limit','1024M');
 require_once("config.php");
 ini_set('precision', $config['precision']);
 $start = microtime(true);   
