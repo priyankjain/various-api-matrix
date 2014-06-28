@@ -62,9 +62,11 @@ if(!$result=$mysqli->query($sql)){
     echo "Error executing query";
     exit;
 }
+
+//Create and initialize global array
 $global_cur = array();
 while($row=$result->fetch_assoc()){
-    $global_cur[$row['currency']] = array($row['mintpal'],$row['cryptsy'],$row['bter'],$row['btce'],$row['vircurex'],$row['bittrex'],$row['poloniex'],$row['kraken']);
+    $global_cur[$row['currency']] = array($row['mintpal_last'],$row['cryptsy_last'],$row['bter_last'],$row['btce_last'],$row['vircurex_last'],$row['bittrex_last'],$row['poloniex_last'],$row['kraken_last'],$row['date_time'],$row['mintpal_vol'],$row['cryptsy_vol'],$row['bter_vol'],$row['btce_vol'],$row['vircurex_vol'],$row['bittrex_vol'],$row['poloniex_vol'],$row['kraken_vol']);
 }
 
 //Update mintpal values
@@ -75,9 +77,11 @@ foreach($json as $market){
         if(!array_key_exists($key, $global_cur))
         {
             $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
-            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-','0000-00-00 00:00:00','-','-','-','-','-','-','-','-');
         }
         $global_cur[$key][0]=$market->last_price;
+        $array = (array)$market;
+        $global_cur[$key][9]=$array['24hvol'];
 }
 
 //Update cryptsy values
@@ -93,9 +97,10 @@ foreach($markets as $key=> $value){
         if(!array_key_exists($key, $global_cur))
         {
             $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
-            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-','0000-00-00 00:00:00','-','-','-','-','-','-','-','-');
         }
         $global_cur[$key][1] = $value->lasttradeprice;
+        $global_cur[$key][10] = $value->volume*$value->lasttradeprice;
     }
 }
 
@@ -105,21 +110,23 @@ $json = curl("https://data.bter.com/api/1/tickers");
 $json = json_decode($json);
 foreach($json as $key=> $value){
     if(strpos($key,"btc") !== false){
+        $val = "";
         if(strpos($key,"btc_")!==false){
             $key = strtoupper(substr($key,4,strlen($key)-4));
-            $value = (1/$value->last);
+            $val = (1/$value->last);
         }
         else
         {
             $key = strtoupper(substr($key,0,strpos($key,"_")));
-            $value = ($value->last);
+            $val = ($value->last);
         }
          if(!array_key_exists($key, $global_cur))
         {
             $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
-            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-','0000-00-00 00:00:00','-','-','-','-','-','-','-','-');
         }
-        $global_cur[$key][2] = $value;
+        $global_cur[$key][2] = $val;
+        $global_cur[$key][11] = $value->vol_btc;
     }
 }
 
@@ -135,13 +142,18 @@ $keys = array('btc_usd','btc_rur','btc_eur','btc_cnh','btc_gbp','ltc_btc','nmc_b
 $currency_pair=array();
 foreach($keys as $key){
 $value = json_decode($BTCeAPI->getPairTicker($key));
-$value = $value->ticker->last;
+$val = $value->ticker->last;
+$vol = $value->ticker->vol_cur;
 if(strpos($key,"btc_")!== false)
 {
-    $global_cur[strtoupper(substr($key,4,strlen($key)-4))][3] = (1/$value);
+    $k = strtoupper(substr($key,4,strlen($key)-4));
+    $global_cur[$k][3] = (1/$val);
+    $global_cur[$k][12] = $vol;
 }
 else{
-    $global_cur[strtoupper(substr($key,0,strpos($key,"_")))][3] = $value;
+    $k = strtoupper(substr($key,0,strpos($key,"_")));
+    $global_cur[$k][3] = $val;
+    $global_cur[$k][12] = $vol;
 }
 }
 
@@ -153,6 +165,9 @@ foreach($currencies as $currency){
 $json = curl("https://api.vircurex.com/api/get_last_trade.json?base=".$currency."&alt=btc");
 $json = json_decode($json);
 $global_cur[$currency][4] =$json->value;
+$json = curl("https://api.vircurex.com/api/get_volume.json?alt=".$currency."&base=btc");
+$json = json_decode($json);
+$global_cur[$currency][13] = ($json->value == "")?0:$json->value;
 }
 
 //Update bittrex values
@@ -168,9 +183,10 @@ foreach($markets as $market){
         {
             echo 'Inserting now';
             $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
-            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-','0000-00-00 00:00:00','-','-','-','-','-','-','-','-');
         }
         $global_cur[$key][5] = $market->Last;
+        $global_cur[$key][14] = $market->BaseVolume;
     }
 }
 
@@ -184,9 +200,10 @@ foreach($json as $key=>$value){
         if(!array_key_exists($key, $global_cur))
         {
             $mysqli->query("insert into `rates` (`currency`) values('".$key."')");
-            $global_cur[$key] = array('-','-','-','-','-','-','-','-');
+            $global_cur[$key] = array('-','-','-','-','-','-','-','-','0000-00-00 00:00:00','-','-','-','-','-','-','-','-');
         }
         $global_cur[$key][6] = $value->last;
+        $global_cur[$key][15] = $value->baseVolume;
     }
 }
 
@@ -197,16 +214,22 @@ $json = curl("https://api.kraken.com/0/public/Ticker?pair=XXBTXLTC,XXBTXNMC,XXBT
 $json = json_decode($json);
 $markets=$json->result;
 foreach($markets as $key=>$value){
-        $global_cur[strtoupper(substr($key,5))][7] = (1/$value->c[0]);
+        $k = strtoupper(substr($key,5));
+        $global_cur[$k][7] = (1/$value->c[0]);
+        $global_cur[$k][16] = ($value->v[1]);
 }
-$queries = "";
+
+//Now update the database using the global array
+$queries = "insert into history select * from rates; ";
 foreach($global_cur as $key=>$value){
-    $queries.= "update `rates` set `mintpal` = '".$value[0]."', `cryptsy` = '".$value[1]."', `bter` = '".$value[2]."', `btce` = '".$value[3]
-    ."', `vircurex` = '".$value[4]."', `bittrex` = '".$value[5]."', `poloniex` = '".$value[6]."', `kraken` = '".$value[7]."' where `currency` = '".$key."'; ";
+    $queries.= "update `rates` set `mintpal_last` = '".$value[0]."', `cryptsy_last` = '".$value[1]."', `bter_last` = '".$value[2]."', `btce_last` = '".$value[3]
+    ."', `vircurex_last` = '".$value[4]."', `bittrex_last` = '".$value[5]."', `poloniex_last` = '".$value[6]."', `kraken_last` = '".$value[7]."', `date_time`=now(), `mintpal_vol` = '".$value[9]."', `cryptsy_vol` = '".$value[10]."', `bter_vol` = '".$value[11]."', `btce_vol` = '".$value[12]
+    ."', `vircurex_vol` = '".$value[13]."', `bittrex_vol` = '".$value[14]."', `poloniex_vol` = '".$value[15]."', `kraken_vol` = '".$value[16]."' where `currency` = '".$key."'; ";
 }
 $queries.="update `last_updated` set `ts` = now() where 1;";
 if(!$result=$mysqli->multi_query($queries)){
     echo "Error executing multiple queries";
+    echo $mysqli->error;
     exit;
 }
 $mysqli->close();

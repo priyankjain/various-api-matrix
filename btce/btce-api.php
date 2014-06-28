@@ -115,7 +115,7 @@ class BTCeAPI {
      * @return type 
      */
     protected function retrieveJSON($URL) {
-        $opts = array('http' =>--
+        $opts = array('http' =>
             array(
                 'method'  => 'GET',
                 'timeout' => 10 

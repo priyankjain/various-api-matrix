@@ -71,7 +71,10 @@ if(!$result=$mysqli->query($sql)){
     </form>
 <div class="container">
     <div class="row">&nbsp;</div>
-    
+    <div class="row">
+        <a href="./" class="btn btn-default">&lt; Back</a>
+    </div>
+    <div class="row">&nbsp;</div>
     <div class="alert alert-info alert-dismissable">
   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
   <strong>Last Updated: </strong> <?php 
@@ -90,28 +93,28 @@ if(!$result=$mysqli->query($sql)){
     ?>
 </div>
     <div class="row">
-    	<table style="table-layout: fixed;" class="table">
+    	<table style="table-layout: fixed;" class="table table-bordered">
     		<thead><th>Currency</th><th>Mintpal</th><th>Cryptsy</th><th>Bter</th><th>Btc-e</th><th>Vircurex</th><th>Bittrex</th><th>Poloniex</th><th>Kraken</th></thead>
     		<tbody>
     			<?php
     				while($row=$result->fetch_assoc()){
     					echo '<tr><th>'.$row['currency'].'</th>
     					   <td>';
-                        if($row['mintpal']=='-') echo '-'; else echo number_format((float)$row['bittrex'],$config['precision'],'.',''); echo '</td>
+                        if($row['mintpal_last']=='-') echo '-'; else { echo number_format((float)$row['mintpal_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['mintpal_vol'],2,'.','').' BTC</p>';} echo '</td>
     					   <td>';
-                        if($row['cryptsy']=='-') echo '-'; else echo number_format((float)$row['cryptsy'],$config['precision'],'.',''); echo '</td>
+                        if($row['cryptsy_last']=='-') echo '-'; else { echo number_format((float)$row['cryptsy_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['cryptsy_vol'],2,'.','').' BTC</p>';} echo '</td>
                             <td>';
-                        if($row['bter']=='-') echo '-'; else echo number_format((float)$row['bter'],$config['precision'],'.',''); echo '</td>
+                        if($row['bter_last']=='-') echo '-'; else { echo number_format((float)$row['bter_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['bter_vol'],2,'.','').' BTC</p>';} echo '</td>
                             <td>';
-                        if($row['btce']=='-') echo '-'; else echo number_format((float)$row['btce'],$config['precision'],'.',''); echo '</td>
+                        if($row['btce_last']=='-') echo '-'; else { echo number_format((float)$row['btce_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['btce_vol'],2,'.','').' BTC</p>';} echo '</td>
                         <td>';
-                        if($row['vircurex']=='-') echo '-'; else echo number_format((float)$row['vircurex'],$config['precision'],'.',''); echo '</td>
+                        if($row['vircurex_last']=='-') echo '-'; else { echo number_format((float)$row['vircurex_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['vircurex_vol'],2,'.','').' BTC</p>';} echo '</td>
     					<td>';
-                        if($row['bittrex']=='-') echo '-'; else echo number_format((float)$row['bittrex'],$config['precision'],'.',''); echo '</td>
+                        if($row['bittrex_last']=='-') echo '-'; else { echo number_format((float)$row['bittrex_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['bittrex_vol'],2,'.','').' BTC</p>';} echo '</td>
                         <td>';
-                        if($row['poloniex']=='-') echo '-'; else echo number_format((float)$row['poloniex'],$config['precision'],'.',''); echo '</td>
+                        if($row['poloniex_last']=='-') echo '-'; else { echo number_format((float)$row['poloniex_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['poloniex_vol'],2,'.','').' BTC</p>';} echo '</td>
                         <td>';
-                        if($row['kraken']=='-') echo '-'; else echo number_format((float)$row['kraken'],$config['precision'],'.',''); echo '</td>
+                        if($row['kraken_last']=='-') echo '-'; else { echo number_format((float)$row['kraken_last'],$config['precision'],'.',''); echo '<p class="text-right small">Vol: '.number_format((float)$row['kraken_vol'],2,'.','').' BTC</p>';} echo '</td>
     					</tr>';
     				}
     			?>

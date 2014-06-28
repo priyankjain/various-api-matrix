@@ -10,6 +10,7 @@ $keys = array('btc_usd','btc_rur','btc_eur','btc_cnh','btc_gbp','ltc_btc','nmc_b
 $currency_pair=array();
 foreach($keys as $key){
 $value = json_decode($BTCeAPI->getPairTicker($key));
+var_dump($value);
 $value = $value->ticker->last;
 $cur = "";
 if(strpos($key,"btc_")!== false)

@@ -1,0 +1,31 @@
+1. Add back to home page button on results.php
+
+2. Modify 'rates' table structure to this:
+
+Columns: 
+date_time, bittrex_last, bittrex_vol, btce_last, btce_vol, bter_last, bter_vol, etc...
+
+where date_time is the time of update, _last is the last price, and _vol is the 24hr volume (which is from same API)
+
+3. 
+a) Create a new table called 'history' with exactly the same columns as above. 
+b) Write 'rates' table data to 'history' table, once every 2 minutes, which is once everytime update.php is called from cron job
+The purpose of this is so I can get a dump of the data to analyze it in excel in my own time.
+
+4. In results.php, for each price displayed, please add in smaller text "Vol: <24hr volume>", e.g.
+
+0.0172
+Vol: 500 BTC
+
+5. Question: At the start where we select coin, how do we determine which coins are at that page? Is it pre-defined or it is queried?
+If it is pre-defined, are we able to remove the option to select. Instead we just have two parameters:
+
+a) Select All Coins, Or
+b) Select Coins with Volume bigger than X (user can choose X)
+Where X = the volume combined on all exchanges for a particular coin. So then it will display all the coins with the volumes combined equal or greater than X.
+
+I will have cron job running once every 2 minutes in background.
+
+- - -
+
+I am paying $30 to finish off the analysis phase of the project. Please let me know if you can do this. Please let me know if you need any clarification on this. Thanks.
