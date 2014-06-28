@@ -148,12 +148,12 @@ if(strpos($key,"btc_")!== false)
 {
     $k = strtoupper(substr($key,4,strlen($key)-4));
     $global_cur[$k][3] = (1/$val);
-    $global_cur[$k][12] = $vol;
+    $global_cur[$k][12] = $vol*$global_cur[$k][3];
 }
 else{
     $k = strtoupper(substr($key,0,strpos($key,"_")));
     $global_cur[$k][3] = $val;
-    $global_cur[$k][12] = $vol;
+    $global_cur[$k][12] = $vol*$global_cur[$k][3];
 }
 }
 
