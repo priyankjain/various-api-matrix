@@ -9,25 +9,52 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 function validate(){
-    var i=$('input[type="checkbox"]:checked').filter(".currencies").size();
-    if(i == 0){
-        if(document.getElementById('yes').checked){
-            document.getElementById("error").innerHTML = '';
-            return true;
-        }
-        else 
-            {   
-                var c= '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please select atleast one currency</div>';
-                document.getElementById("error").innerHTML = c;
-                //window.location.hash ="#error";
-                document.getElementById('error').scrollIntoView()
-                return false;
-            }
+    var error = '';
+    var vol = document.currency.threshold.value;
+    var seconds = document.currency.seconds.value;
+    console.log(seconds);
+    console.log(vol);
+    if(document.getElementById('yes').checked && document.getElementById('manual').checked){
+        console.log(0);
+        error = '';
     }
-    document.getElementById("error").innerHTML = '';
-    return true;
+    else if(document.getElementById('yes').checked && document.getElementById('auto').checked && (seconds == null || isNaN(parseFloat(seconds)))){ 
+        console.log(1);
+        error = '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please numeric interval value in seconds</div>';  
+    }
+    else if(document.getElementById('manual').checked && document.getElementById('no').checked && (vol == null || isNaN(parseFloat(vol)))){
+        console.log(2);
+        error = '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please enter numeric threshold volume</div>';
+    }         
+    else if(document.getElementById('auto').checked && document.getElementById('no').checked && (vol == null || isNaN(parseFloat(vol))) && !(seconds == null || isNaN(parseFloat(seconds)))){
+        console.log(4);
+        error = '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please enter numeric threshold volume</div>';
+    }
+    else if(document.getElementById('no').checked && document.getElementById('auto').checked  && !(vol == null || isNaN(parseFloat(vol))) && (seconds == null || isNaN(parseFloat(seconds)))){
+        console.log(5);
+        error = '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please numeric interval value in seconds</div>';  
+    }
+    else if(document.getElementById('no').checked && document.getElementById('auto').checked  && (vol == null || isNaN(parseFloat(vol))) && (seconds == null || isNaN(parseFloat(seconds)))){
+    console.log(3);
+    error = '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error!</strong> Please numeric threshold volume & numeric interval value in seconds</div>';     
+    }
+    else{
+        console.log(6);
+        error = '';
+    }
+    document.getElementById("error").innerHTML = error;
+    if(error == ''){
+        document.getElementById('error').innerHTML = '';
+        return true;
+    }
+    else{
+        document.getElementById('error').scrollIntoView();
+        return false;
+    }
 }
                 $(function () {
                     $("#refresh").hide();
@@ -136,50 +163,29 @@ $(function(){
             </h3>
     </div>
     <div class="row">
-    <div class="form-group">
-            <label class="col-sm-3 col-md-3"><h4>Select all currencies?</h4></label>
-            <div class="col-sm-7 col-md-7">
+    <div class="col-xs-6 form-group">
+            <label class="col-sm-6 col-md-6"><h4>Select All Currencies?</h4></label>
+            <div class="col-sm-6 col-md-6">
                <div class="btn-group" data-toggle="buttons">
 
       <label class="btn btn-primary">
-        <input type="radio" name="options" id="yes" value="yes" class="yes-no"> Yes
+        <input type="radio" name="options" id="yes" value="yes" class="yes-no">All
       </label>
       
       <label class="btn btn-primary active">
-        <input type="radio" name="options" id="no" value="no" class="yes-no" checked> No
+        <input type="radio" name="options" id="no" value="no" class="yes-no" checked>Threshold volume
       </label> 
 </div>
             </div>
     </div>
+
+    <div class="col-xs-6 form-group" id="cur-pair">
+    <input type="text"  id="threshold" class="form-control" name="threshold" placeholder="Enter threshold volume">
+    </div>
+
 </div>
 <div class="row">&nbsp;</div>
-<div id="cur-pair">
-<?php
-require_once("config.php");
-    $cnt = 0;
-    $mysqli = new mysqli($config['host'],$config['user'],$config['pwd'],$config['db']);
-if($mysqli->connect_errno > 0){
-    echo "Error connecting to database";
-    exit;
-}
-if(!$result=$mysqli->query("select `currency` from rates")){
-    echo "Error executing query";
-    exit;
-}
-$i=0;
-    while($row = $result->fetch_assoc()){
-        if($cnt == 0) echo '<div class="form-group"><div class="row">';
-        echo '<div class="col-xs-2"><span class="button-checkbox"><button type="button" class="btn" data-color="primary">'.$row['currency'].
-        '</button><input type="checkbox" class="hidden currencies" name="'.$row['currency'].'"/></span></div>';
-        if($cnt == 5 || $i == $result->num_rows-1) {
-            echo '</div></div>';
-            $cnt = -1;
-        }
-        $cnt++;
-        $i++;
-    }   
-?>
-</div>
+
     <div class="form-group">
     <h3><br />
         <small>Display Options</small>
