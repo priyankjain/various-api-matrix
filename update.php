@@ -220,7 +220,8 @@ foreach($markets as $key=>$value){
 }
 
 //Now update the database using the global array
-$queries = "insert into history select * from rates; ";
+// $queries = "insert into history select * from rates; ";
+$queries = "";
 foreach($global_cur as $key=>$value){
     $queries.= "update `rates` set `mintpal_last` = '".$value[0]."', `cryptsy_last` = '".$value[1]."', `bter_last` = '".$value[2]."', `btce_last` = '".$value[3]
     ."', `vircurex_last` = '".$value[4]."', `bittrex_last` = '".$value[5]."', `poloniex_last` = '".$value[6]."', `kraken_last` = '".$value[7]."', `date_time`=now(), `mintpal_vol` = '".$value[9]."', `cryptsy_vol` = '".$value[10]."', `bter_vol` = '".$value[11]."', `btce_vol` = '".$value[12]
